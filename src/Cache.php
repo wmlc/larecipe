@@ -33,10 +33,12 @@ class Cache
 	 */
 	public function remember(\Closure $callback, $key)
 	{
-		if (!config('larecipe.cache.enabled') || request()->has('debug')) {
+		if (!config('larecipe.cache.enabled')) {
 			return $callback();
 		}
-
+		if (request()->has('debug')) {
+			$this->cache->forget($key);
+		}
 		$cachePeriod = $this->checkTtlNeedsChanged(config('larecipe.cache.period'));
 
 		return $this->cache->remember($key, $cachePeriod, $callback);
